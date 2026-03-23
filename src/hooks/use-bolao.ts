@@ -160,7 +160,11 @@ export function useBolao() {
     : 0
 
   const isMatchLocked = (match: Match): boolean => {
-    return match.status !== "scheduled" || new Date(match.dateTime) <= new Date()
+    if (match.status !== "scheduled") return true
+    const kickoff = new Date(match.dateTime).getTime()
+    const now = Date.now()
+    const tenMinutes = 10 * 60 * 1000
+    return now >= kickoff - tenMinutes
   }
 
   return {
