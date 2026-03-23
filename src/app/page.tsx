@@ -1,6 +1,7 @@
 "use client"
 
 import { useBolao } from "@/hooks/use-bolao"
+import { useAuth } from "@/hooks/use-auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Users, Calendar, Target } from "lucide-react"
@@ -17,8 +18,9 @@ export default function HomePage() {
     finishedMatchesCount,
     totalMatches,
     userPredictionsCount,
-    activeParticipantId,
   } = useBolao()
+  const { currentParticipantId } = useAuth()
+  const activeParticipantId = currentParticipantId
 
   const upcomingMatches = matches
     .filter((m) => m.status === "scheduled" && new Date(m.dateTime) > new Date())

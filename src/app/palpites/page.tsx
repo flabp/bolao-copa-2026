@@ -11,6 +11,7 @@ import { PenLine, Lock, Check } from "lucide-react"
 import { getTeamById, GROUPS } from "@/lib/teams-data"
 import { TeamFlag } from "@/components/team-flag"
 import { MatchPhase, PHASE_LABELS } from "@/lib/types"
+import { useAuth } from "@/hooks/use-auth"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
@@ -27,6 +28,7 @@ export default function PalpitesPage() {
     userPredictionsCount,
     totalMatches,
   } = useBolao()
+  const { currentParticipantName } = useAuth()
 
   const [activePhase, setActivePhase] = useState<string>("group")
   const [groupFilter, setGroupFilter] = useState<string>("all")
@@ -36,24 +38,6 @@ export default function PalpitesPage() {
     if (activePhase === "group" && groupFilter !== "all" && m.group !== groupFilter) return false
     return true
   }).sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime())
-
-  if (!activeParticipant) {
-    return (
-      <div className="space-y-6">
-        <h1 className="text-2xl font-bold flex items-center gap-2 tracking-tight">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
-            <PenLine className="h-5 w-5" />
-          </div>
-          Meus Palpites
-        </h1>
-        <Card className="border-0 shadow-md">
-          <CardContent className="p-8 text-center text-muted-foreground">
-            Selecione um participante no menu lateral para fazer palpites.
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   return (
     <div className="space-y-6">
@@ -66,7 +50,7 @@ export default function PalpitesPage() {
             Meus Palpites
           </h1>
           <p className="text-muted-foreground mt-1">
-            Palpites de <span className="font-semibold text-foreground">{activeParticipant.name}</span>
+            Palpites de <span className="font-semibold text-foreground">{currentParticipantName}</span>
           </p>
         </div>
         <Badge variant="secondary" className="text-base px-4 py-1">

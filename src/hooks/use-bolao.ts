@@ -5,9 +5,11 @@ import { BolaoData, LeaderboardEntry, Match, MatchPhase, Prediction } from "@/li
 import { getBolaoData, savePrediction as storeSavePrediction, saveMatchResult as storeSaveResult } from "@/lib/store"
 import { BOLAO_UPDATED_EVENT } from "@/lib/constants"
 import { calculateLeaderboard } from "@/lib/scoring"
+import { useAuth } from "@/hooks/use-auth"
 
 export function useBolao() {
   const [data, setData] = useState<BolaoData | null>(null)
+  const { currentParticipantId } = useAuth()
 
   const reload = useCallback(() => {
     setData(getBolaoData())
@@ -29,7 +31,7 @@ export function useBolao() {
   const participants = data?.participants ?? []
   const teams = data?.teams ?? []
   const settings = data?.settings
-  const activeParticipantId = data?.activeParticipantId ?? null
+  const activeParticipantId = currentParticipantId
 
   const activeParticipant = participants.find((p) => p.id === activeParticipantId) ?? null
 

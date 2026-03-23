@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Inter, Barlow } from "next/font/google"
 import "./globals.css"
-import { Sidebar } from "@/components/layout/sidebar"
+import { AuthGate } from "@/components/auth/auth-gate"
 
 const inter = Inter({
   variable: "--font-inter",
@@ -27,12 +27,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${barlow.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background">
-        <Sidebar />
-        <main className="min-h-screen lg:pl-64">
-          <div className="mx-auto max-w-6xl p-4 pt-16 lg:p-8 lg:pt-8">
-            {children}
-          </div>
-        </main>
+        <AuthGate>{children}</AuthGate>
       </body>
     </html>
   )

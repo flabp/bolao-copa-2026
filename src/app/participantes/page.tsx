@@ -2,27 +2,52 @@
 
 import { useState } from "react"
 import { useParticipants } from "@/hooks/use-participants"
+import { useAuth } from "@/hooks/use-auth"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Plus, Trash2 } from "lucide-react"
+import { Users, Plus, Trash2, Shield } from "lucide-react"
 import { format } from "date-fns"
 
 export default function ParticipantesPage() {
   const { participants, addParticipant, removeParticipant } = useParticipants()
+  const { isAdmin } = useAuth()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [phone, setPhone] = useState("")
+  const [passwordCode, setPasswordCode] = useState("")
+  const [isNewAdmin, setIsNewAdmin] = useState(false)
+
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold flex items-center gap-2 tracking-tight">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+            <Users className="h-5 w-5" />
+          </div>
+          Participantes
+        </h1>
+        <Card className="border-0 shadow-md">
+          <CardContent className="p-8 text-center">
+            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground text-lg">Acesso restrito ao administrador</p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) return
-    addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined)
+    if (!name.trim() || !passwordCode.trim()) return
+    addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined, passwordCode.trim())
     setName("")
     setEmail("")
     setPhone("")
+    setPasswordCode("")
+    setIsNewAdmin(false)
   }
 
   return (
@@ -47,7 +72,7 @@ export default function ParticipantesPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome *</Label>
                 <Input
@@ -55,6 +80,17 @@ export default function ParticipantesPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nome do participante"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="passwordCode">Codigo de Acesso *</Label>
+                <Input
+                  id="passwordCode"
+                  type="password"
+                  value={passwordCode}
+                  onChange={(e) => setPasswordCode(e.target.value)}
+                  placeholder="Codigo para login"
                   required
                 />
               </div>
@@ -77,6 +113,16 @@ export default function ParticipantesPage() {
                   placeholder="(11) 99999-9999"
                 />
               </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="isAdmin"
+                checked={isNewAdmin}
+                onChange={(e) => setIsNewAdmin(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300"
+              />
+              <Label htmlFor="isAdmin" className="cursor-pointer">Administrador</Label>
             </div>
             <Button type="submit" className="cursor-pointer">
               <Plus className="mr-2 h-4 w-4" />

@@ -13,25 +13,29 @@ import {
   Settings,
   Menu,
   X,
+  LogOut,
 } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { UserSelector } from "./user-selector"
+import { useAuth } from "@/hooks/use-auth"
 
-const navItems = [
-  { href: "/", label: "Inicio", icon: Home },
-  { href: "/jogos", label: "Jogos", icon: Calendar },
-  { href: "/palpites", label: "Meus Palpites", icon: PenLine },
-  { href: "/classificacao", label: "Classificacao", icon: BarChart3 },
-  { href: "/grupos", label: "Grupos", icon: Trophy },
-  { href: "/participantes", label: "Participantes", icon: Users },
-  { href: "/admin", label: "Admin", icon: Shield },
-  { href: "/setup", label: "Configurações", icon: Settings },
+const allNavItems = [
+  { href: "/", label: "Inicio", icon: Home, adminOnly: false },
+  { href: "/jogos", label: "Jogos", icon: Calendar, adminOnly: false },
+  { href: "/palpites", label: "Meus Palpites", icon: PenLine, adminOnly: false },
+  { href: "/classificacao", label: "Classificacao", icon: BarChart3, adminOnly: false },
+  { href: "/grupos", label: "Grupos", icon: Trophy, adminOnly: false },
+  { href: "/participantes", label: "Participantes", icon: Users, adminOnly: true },
+  { href: "/admin", label: "Admin", icon: Shield, adminOnly: true },
+  { href: "/setup", label: "Configuracoes", icon: Settings, adminOnly: true },
 ]
 
 export function Sidebar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
+  const { currentParticipantName, isAdmin, logout } = useAuth()
+
+  const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin)
 
   return (
     <>
@@ -73,9 +77,30 @@ export function Sidebar() {
           </div>
         </div>
 
-        {/* User Selector */}
+        {/* Logged-in user display */}
         <div className="border-b border-sidebar-border px-4 py-3">
-          <UserSelector />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1e3a5f] to-[#0f172a] text-xs font-bold text-white">
+                {currentParticipantName?.charAt(0).toUpperCase() ?? "?"}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-sidebar-foreground truncate">
+                  {currentParticipantName}
+                </p>
+                {isAdmin && (
+                  <p className="text-xs text-amber-400">Admin</p>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={logout}
+              className="shrink-0 rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              title="Sair"
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Navigation */}

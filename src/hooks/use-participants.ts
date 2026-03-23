@@ -27,7 +27,7 @@ export function useParticipants() {
     return () => window.removeEventListener(BOLAO_UPDATED_EVENT, handler)
   }, [reload])
 
-  const addParticipant = (name: string, email?: string, phone?: string) => {
+  const addParticipant = (name: string, email?: string, phone?: string, passwordCode?: string) => {
     storeAddParticipant(name, email, phone)
   }
 

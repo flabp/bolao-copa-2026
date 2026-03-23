@@ -107,6 +107,13 @@ export interface GroupStanding {
   points: number
 }
 
+export interface AuthSession {
+  participantId: string
+  participantName: string
+  isAdmin: boolean
+  loginAt: string
+}
+
 export const PHASE_LABELS: Record<MatchPhase, string> = {
   group: "Fase de Grupos",
   "round-of-32": "32 avos de Final",

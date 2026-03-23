@@ -9,7 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Shield, Save, Download, Upload, Check, RefreshCw, Wifi, WifiOff } from "lucide-react"
-import { checkAdminPassword, exportData, importData, updateScoringSystem } from "@/lib/store"
+import { exportData, importData, updateScoringSystem } from "@/lib/store"
+import { useAuth } from "@/hooks/use-auth"
 import { getTeamById } from "@/lib/teams-data"
 import { TeamFlag } from "@/components/team-flag"
 import { isFootballApiConfigured, fetchTodayResults, findMatchingTeamId, type MatchResultFromApi } from "@/lib/football-api"
@@ -17,21 +18,9 @@ import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
 export default function AdminPage() {
-  const [password, setPassword] = useState("")
-  const [authenticated, setAuthenticated] = useState(false)
-  const [error, setError] = useState("")
+  const { isAdmin } = useAuth()
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (checkAdminPassword(password)) {
-      setAuthenticated(true)
-      setError("")
-    } else {
-      setError("Senha incorreta")
-    }
-  }
-
-  if (!authenticated) {
+  if (!isAdmin) {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold flex items-center gap-2 tracking-tight">
@@ -41,25 +30,12 @@ export default function AdminPage() {
           Admin
         </h1>
         <Card className="max-w-md border-0 shadow-md">
-          <CardHeader>
-            <CardTitle>Acesso Administrador</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="adminPass">Senha</Label>
-                <Input
-                  id="adminPass"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Digite a senha de admin"
-                />
-              </div>
-              {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="cursor-pointer">Entrar</Button>
-              <p className="text-xs text-muted-foreground">Senha padrao: admin123</p>
-            </form>
+          <CardContent className="p-8 text-center">
+            <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-muted-foreground text-lg">Acesso restrito</p>
+            <p className="text-sm text-muted-foreground mt-2">
+              Voce precisa estar logado como administrador para acessar esta pagina.
+            </p>
           </CardContent>
         </Card>
       </div>

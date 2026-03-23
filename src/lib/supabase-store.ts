@@ -9,6 +9,34 @@ function notify() {
   }
 }
 
+// --- Authentication ---
+
+export async function authenticateParticipant(name: string, code: string): Promise<Participant | null> {
+  if (!isSupabaseConfigured()) {
+    // Fallback: check localStorage
+    const data = localStore.getBolaoData()
+    const p = data.participants.find(
+      (p) => p.name.toLowerCase() === name.toLowerCase()
+    )
+    return p || null
+  }
+  const { data, error } = await supabase!
+    .from("participants")
+    .select("*")
+    .ilike("name", name)
+    .eq("password_code", code)
+    .single()
+  if (error || !data) return null
+  return {
+    id: data.id,
+    name: data.name,
+    email: data.email || "",
+    phone: data.phone || "",
+    createdAt: data.created_at,
+    isAdmin: data.is_admin || false,
+  }
+}
+
 // --- Participants ---
 
 export async function getParticipants(): Promise<Participant[]> {
@@ -17,17 +45,17 @@ export async function getParticipants(): Promise<Participant[]> {
   }
   const { data, error } = await supabase!.from("participants").select("*").order("created_at")
   if (error) throw error
-  return (data || []).map((p: any, i: number) => ({
+  return (data || []).map((p: any) => ({
     id: p.id,
     name: p.name,
     email: p.email || "",
     phone: p.phone || "",
     createdAt: p.created_at,
-    isAdmin: i === 0,
+    isAdmin: p.is_admin || false,
   }))
 }
 
-export async function addParticipantAsync(name: string, email?: string, phone?: string): Promise<Participant> {
+export async function addParticipantAsync(name: string, email?: string, phone?: string, passwordCode?: string, isAdmin?: boolean): Promise<Participant> {
   if (!isSupabaseConfigured()) {
     return localStore.addParticipant(name, email, phone)
   }
@@ -38,6 +66,8 @@ export async function addParticipantAsync(name: string, email?: string, phone?: 
     email: email || null,
     phone: phone || null,
     avatar_color: color,
+    password_code: passwordCode || null,
+    is_admin: isAdmin || false,
   }).select().single()
   if (error) throw error
   notify()
@@ -47,7 +77,7 @@ export async function addParticipantAsync(name: string, email?: string, phone?: 
     email: data.email || "",
     phone: data.phone || "",
     createdAt: data.created_at,
-    isAdmin: false,
+    isAdmin: data.is_admin || false,
   }
 }
 
