@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Users, Plus, Trash2, Shield } from "lucide-react"
+import { Users, Plus, Trash2, Shield, Mail, Loader2 } from "lucide-react"
 import { format } from "date-fns"
 
 export default function ParticipantesPage() {
@@ -19,6 +19,8 @@ export default function ParticipantesPage() {
   const [phone, setPhone] = useState("")
   const [passwordCode, setPasswordCode] = useState("")
   const [isNewAdmin, setIsNewAdmin] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [emailStatus, setEmailStatus] = useState<"" | "sent" | "error">("")
 
   if (!isAdmin) {
     return (
@@ -39,15 +41,47 @@ export default function ParticipantesPage() {
     )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !passwordCode.trim()) return
-    addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined, passwordCode.trim(), isNewAdmin)
-    setName("")
-    setEmail("")
-    setPhone("")
-    setPasswordCode("")
-    setIsNewAdmin(false)
+
+    setSending(true)
+    setEmailStatus("")
+
+    try {
+      await addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined, passwordCode.trim(), isNewAdmin)
+
+      // Send email with credentials if email was provided
+      if (email.trim()) {
+        try {
+          const res = await fetch("/api/send-credentials", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: name.trim(),
+              email: email.trim(),
+              code: passwordCode.trim(),
+            }),
+          })
+          if (res.ok) {
+            setEmailStatus("sent")
+          } else {
+            setEmailStatus("error")
+          }
+        } catch {
+          setEmailStatus("error")
+        }
+      }
+
+      setName("")
+      setEmail("")
+      setPhone("")
+      setPasswordCode("")
+      setIsNewAdmin(false)
+    } finally {
+      setSending(false)
+      setTimeout(() => setEmailStatus(""), 5000)
+    }
   }
 
   return (
@@ -124,10 +158,24 @@ export default function ParticipantesPage() {
               />
               <Label htmlFor="isAdmin" className="cursor-pointer">Administrador</Label>
             </div>
-            <Button type="submit" className="cursor-pointer">
-              <Plus className="mr-2 h-4 w-4" />
-              Cadastrar
-            </Button>
+            <div className="flex items-center gap-3">
+              <Button type="submit" className="cursor-pointer" disabled={sending}>
+                {sending ? (
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Cadastrando...</>
+                ) : (
+                  <><Plus className="mr-2 h-4 w-4" /> Cadastrar</>
+                )}
+              </Button>
+              {emailStatus === "sent" && (
+                <Badge className="bg-emerald-500 text-white"><Mail className="mr-1 h-3 w-3" /> Email enviado!</Badge>
+              )}
+              {emailStatus === "error" && (
+                <Badge variant="destructive">Erro ao enviar email</Badge>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Se o email for preenchido, as credenciais serao enviadas automaticamente.
+            </p>
           </form>
         </CardContent>
       </Card>
