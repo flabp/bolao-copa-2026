@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useBolao } from "@/hooks/use-bolao"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -162,6 +162,14 @@ function PredictionCard({
   const [homeVal, setHomeVal] = useState(predHome?.toString() ?? "")
   const [awayVal, setAwayVal] = useState(predAway?.toString() ?? "")
   const [saved, setSaved] = useState(false)
+
+  // Sync with async data from Supabase
+  useEffect(() => {
+    if (predHome !== undefined) setHomeVal(predHome.toString())
+  }, [predHome])
+  useEffect(() => {
+    if (predAway !== undefined) setAwayVal(predAway.toString())
+  }, [predAway])
 
   const handleSave = useCallback(
     (h: string, a: string) => {
