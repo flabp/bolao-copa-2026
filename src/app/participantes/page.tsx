@@ -42,7 +42,7 @@ export default function ParticipantesPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim() || !passwordCode.trim()) return
-    addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined, passwordCode.trim())
+    addParticipant(name.trim(), email.trim() || undefined, phone.trim() || undefined, passwordCode.trim(), isNewAdmin)
     setName("")
     setEmail("")
     setPhone("")

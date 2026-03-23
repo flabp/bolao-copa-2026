@@ -3,21 +3,25 @@
 import { useCallback, useEffect, useState } from "react"
 import { Participant } from "@/lib/types"
 import {
-  getBolaoData,
-  addParticipant as storeAddParticipant,
-  removeParticipant as storeRemoveParticipant,
-  setActiveParticipant as storeSetActiveParticipant,
-} from "@/lib/store"
+  getParticipants as supabaseGetParticipants,
+  addParticipantAsync,
+  removeParticipantAsync,
+} from "@/lib/supabase-store"
 import { BOLAO_UPDATED_EVENT } from "@/lib/constants"
 
 export function useParticipants() {
   const [participants, setParticipants] = useState<Participant[]>([])
-  const [activeParticipantId, setActiveId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  const reload = useCallback(() => {
-    const data = getBolaoData()
-    setParticipants(data.participants)
-    setActiveId(data.activeParticipantId)
+  const reload = useCallback(async () => {
+    try {
+      const data = await supabaseGetParticipants()
+      setParticipants(data)
+    } catch (err) {
+      console.error("Error loading participants:", err)
+    } finally {
+      setLoading(false)
+    }
   }, [])
 
   useEffect(() => {
@@ -27,26 +31,28 @@ export function useParticipants() {
     return () => window.removeEventListener(BOLAO_UPDATED_EVENT, handler)
   }, [reload])
 
-  const addParticipant = (name: string, email?: string, phone?: string, passwordCode?: string) => {
-    storeAddParticipant(name, email, phone)
+  const addParticipant = async (name: string, email?: string, phone?: string, passwordCode?: string, isAdmin?: boolean) => {
+    try {
+      await addParticipantAsync(name, email, phone, passwordCode, isAdmin)
+      await reload()
+    } catch (err) {
+      console.error("Error adding participant:", err)
+    }
   }
 
-  const removeParticipant = (id: string) => {
-    storeRemoveParticipant(id)
+  const removeParticipant = async (id: string) => {
+    try {
+      await removeParticipantAsync(id)
+      await reload()
+    } catch (err) {
+      console.error("Error removing participant:", err)
+    }
   }
-
-  const setActiveParticipant = (id: string) => {
-    storeSetActiveParticipant(id)
-  }
-
-  const activeParticipant = participants.find((p) => p.id === activeParticipantId) ?? null
 
   return {
     participants,
-    activeParticipant,
-    activeParticipantId,
+    loading,
     addParticipant,
     removeParticipant,
-    setActiveParticipant,
   }
 }
