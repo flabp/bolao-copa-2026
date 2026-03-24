@@ -65,7 +65,7 @@ export default function HomePage() {
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1400&q=80')",
+            backgroundImage: "url('/stadium.jpg')",
           }}
         />
         {/* Dark Gradient Overlay */}
