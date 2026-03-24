@@ -39,8 +39,8 @@ export default function GruposPage() {
               <CardHeader className="pb-2 bg-gradient-to-r from-[#1e3a5f] to-[#0f172a] text-white">
                 <CardTitle className="text-lg font-bold">Grupo {group}</CardTitle>
               </CardHeader>
-              <CardContent className="p-0">
-                <Table>
+              <CardContent className="p-0 overflow-x-auto">
+                <Table className="min-w-[420px]">
                   <TableHeader>
                     <TableRow className="bg-slate-50">
                       <TableHead className="pl-4">Selecao</TableHead>
