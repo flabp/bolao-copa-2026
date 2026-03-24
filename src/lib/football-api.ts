@@ -7,9 +7,9 @@
  * Season: 2026
  */
 
-const API_KEY = typeof window !== "undefined"
-  ? process.env.NEXT_PUBLIC_FOOTBALL_API_KEY || ""
-  : ""
+// API key is now server-side only (FOOTBALL_API_KEY, no NEXT_PUBLIC_ prefix)
+// Client-side code should call /api/sync-results instead of using this directly
+const API_KEY = ""
 
 const BASE_URL = "https://v3.football.api-sports.io"
 

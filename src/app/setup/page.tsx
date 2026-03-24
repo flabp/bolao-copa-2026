@@ -7,7 +7,8 @@ import { CheckCircle2, XCircle, Database, Wifi, Globe } from "lucide-react"
 
 export default function SetupPage() {
   const supabaseOk = isSupabaseConfigured()
-  const apiKey = process.env.NEXT_PUBLIC_FOOTBALL_API_KEY
+  // Football API key is now server-side only; check if sync route works instead
+  const apiKey = false // Server-side key not accessible from client
 
   return (
     <div className="space-y-6">
