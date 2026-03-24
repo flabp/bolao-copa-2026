@@ -214,7 +214,11 @@ function PredictionCard({
             </span>
           </div>
           {locked && <Lock className="h-4 w-4 text-muted-foreground" />}
-          {saved && <Check className="h-4 w-4 text-emerald-600" />}
+          {saved && (
+            <span className="flex items-center gap-1 text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full animate-pulse">
+              <Check className="h-3.5 w-3.5" /> Salvo!
+            </span>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
