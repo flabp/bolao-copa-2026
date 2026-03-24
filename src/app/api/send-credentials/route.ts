@@ -1,6 +1,31 @@
 import nodemailer from "nodemailer"
 import { NextRequest, NextResponse } from "next/server"
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT_MAX = 5
+const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now()
+  const entry = rateLimitMap.get(ip)
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW })
+    return true
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return false
+  entry.count++
+  return true
+}
+
 const APP_URL = "https://bolao-copa-2026-eta.vercel.app"
 
 const transporter = nodemailer.createTransport({
@@ -13,6 +38,18 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(request: NextRequest) {
   try {
+    const forwarded = request.headers.get("x-forwarded-for")
+    const ip = forwarded?.split(",")[0]?.trim() || "unknown"
+    if (!checkRateLimit(ip)) {
+      return NextResponse.json({ error: "Muitas requisições. Tente novamente em 1 minuto." }, { status: 429 })
+    }
+
+    const origin = request.headers.get("origin")
+    const host = request.headers.get("host")
+    if (origin && host && !origin.includes(host) && !origin.includes("localhost") && !origin.includes("vercel.app")) {
+      return NextResponse.json({ error: "Requisição não autorizada." }, { status: 403 })
+    }
+
     const { name, email, code } = await request.json()
 
     if (!name || !email || !code) {
@@ -42,7 +79,7 @@ export async function POST(request: NextRequest) {
           </div>
 
           <div style="padding: 32px;">
-            <p style="font-size: 16px; color: #e2e8f0;">Ola <strong>${name}</strong>!</p>
+            <p style="font-size: 16px; color: #e2e8f0;">Ola <strong>${escapeHtml(name)}</strong>!</p>
             <p style="font-size: 14px; color: #94a3b8; line-height: 1.6;">
               Voce foi cadastrado(a) no Bolao da Copa do Mundo 2026!
               Use as credenciais abaixo para acessar o sistema e fazer seus palpites.
@@ -51,10 +88,10 @@ export async function POST(request: NextRequest) {
             <div style="background: #1e293b; border-radius: 8px; padding: 24px; margin: 24px 0;">
               <p style="margin: 0 0 12px; font-size: 12px; text-transform: uppercase; color: #64748b; letter-spacing: 1px;">Suas Credenciais</p>
               <p style="margin: 0 0 8px; font-size: 14px; color: #e2e8f0;">
-                <strong>Nome:</strong> ${name}
+                <strong>Nome:</strong> ${escapeHtml(name)}
               </p>
               <p style="margin: 0; font-size: 14px; color: #e2e8f0;">
-                <strong>Codigo:</strong> <span style="background: #334155; padding: 2px 8px; border-radius: 4px; color: #f59e0b; font-family: monospace;">${code}</span>
+                <strong>Codigo:</strong> <span style="background: #334155; padding: 2px 8px; border-radius: 4px; color: #f59e0b; font-family: monospace;">${escapeHtml(code)}</span>
               </p>
             </div>
 

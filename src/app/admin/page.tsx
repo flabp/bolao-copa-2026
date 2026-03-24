@@ -8,12 +8,12 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Shield, Save, Download, Upload, Check, RefreshCw, Wifi, WifiOff } from "lucide-react"
+import { Shield, Save, Download, Upload, Check, RefreshCw, Wifi } from "lucide-react"
 import { exportData, importData, updateScoringSystem } from "@/lib/store"
 import { useAuth } from "@/hooks/use-auth"
 import { getTeamById } from "@/lib/teams-data"
 import { TeamFlag } from "@/components/team-flag"
-import { isFootballApiConfigured, fetchTodayResults, findMatchingTeamId, type MatchResultFromApi } from "@/lib/football-api"
+import { findMatchingTeamId, type MatchResultFromApi } from "@/lib/football-api"
 import { format } from "date-fns"
 import { ptBR } from "date-fns/locale"
 
@@ -81,20 +81,51 @@ function AdminPanel() {
 }
 
 function SyncResultsButton({ onSync }: { onSync: (results: MatchResultFromApi[]) => void }) {
+  const { currentParticipantId } = useAuth()
   const [loading, setLoading] = useState(false)
   const [status, setStatus] = useState<string>("")
-  const apiConfigured = isFootballApiConfigured()
 
   const handleSync = async () => {
     setLoading(true)
     setStatus("Buscando resultados...")
     try {
-      const results = await fetchTodayResults()
-      if (results.length === 0) {
+      const res = await fetch("/api/sync-results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ participantId: currentParticipantId }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setStatus(`Erro: ${data.error}`)
+        return
+      }
+      const fixtures = data.results || []
+      if (fixtures.length === 0) {
         setStatus("Nenhum jogo com resultado encontrado hoje.")
       } else {
-        onSync(results)
-        setStatus(`${results.length} resultado(s) encontrado(s)!`)
+        // Map API fixtures to MatchResultFromApi format
+        const mapped: MatchResultFromApi[] = fixtures.map((f: any) => {
+          const statusShort = f.fixture?.status?.short || "NS"
+          const finished = ["FT", "AET", "PEN"]
+          const inProgress = ["1H", "2H", "HT", "ET"]
+          let mappedStatus: "scheduled" | "in_progress" | "finished" = "scheduled"
+          if (finished.includes(statusShort)) mappedStatus = "finished"
+          else if (inProgress.includes(statusShort)) mappedStatus = "in_progress"
+
+          return {
+            apiFixtureId: f.fixture?.id,
+            homeTeamName: f.teams?.home?.name || "",
+            awayTeamName: f.teams?.away?.name || "",
+            homeScore: f.goals?.home ?? 0,
+            awayScore: f.goals?.away ?? 0,
+            homePenalties: f.score?.penalty?.home ?? undefined,
+            awayPenalties: f.score?.penalty?.away ?? undefined,
+            status: mappedStatus,
+            dateTime: f.fixture?.date || "",
+          }
+        })
+        onSync(mapped)
+        setStatus(`${mapped.length} resultado(s) encontrado(s)!`)
       }
     } catch (err: any) {
       setStatus(`Erro: ${err.message}`)
@@ -102,23 +133,6 @@ function SyncResultsButton({ onSync }: { onSync: (results: MatchResultFromApi[])
       setLoading(false)
       setTimeout(() => setStatus(""), 5000)
     }
-  }
-
-  if (!apiConfigured) {
-    return (
-      <Card className="border-0 shadow-sm mb-4">
-        <CardContent className="p-4 flex items-center gap-3">
-          <WifiOff className="h-5 w-5 text-muted-foreground" />
-          <div>
-            <p className="text-sm font-medium">API de resultados nao configurada</p>
-            <p className="text-xs text-muted-foreground">
-              Adicione NEXT_PUBLIC_FOOTBALL_API_KEY ao .env.local para ativar.
-              Veja a pagina de Setup para instrucoes.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    )
   }
 
   return (

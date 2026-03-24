@@ -1,7 +1,7 @@
 "use client"
 
 import { BolaoData, Match, Participant, Prediction } from "./types"
-import { STORAGE_KEY, BOLAO_UPDATED_EVENT, DEFAULT_SCORING, DEFAULT_POOL_NAME, DEFAULT_ADMIN_PASSWORD } from "./constants"
+import { STORAGE_KEY, BOLAO_UPDATED_EVENT, DEFAULT_SCORING, DEFAULT_POOL_NAME } from "./constants"
 import { ALL_MATCHES } from "./matches-data"
 import { TEAMS } from "./teams-data"
 
@@ -11,7 +11,7 @@ function getDefaultData(): BolaoData {
     matches: ALL_MATCHES.map((m) => ({ ...m })),
     participants: [],
     predictions: [],
-    adminPassword: DEFAULT_ADMIN_PASSWORD,
+    adminPassword: "",
     activeParticipantId: null,
     settings: {
       poolName: DEFAULT_POOL_NAME,

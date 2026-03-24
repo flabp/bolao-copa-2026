@@ -187,6 +187,6 @@ export async function checkAdminPasswordAsync(password: string): Promise<boolean
     return localStore.checkAdminPassword(password)
   }
   const { data, error } = await supabase!.from("settings").select("value").eq("key", "admin_password").single()
-  if (error) return password === "admin123"
+  if (error) return false
   return data.value === password
 }

@@ -173,8 +173,8 @@ function PredictionCard({
 
   const handleSave = useCallback(
     (h: string, a: string) => {
-      const hNum = parseInt(h)
-      const aNum = parseInt(a)
+      const hNum = Math.min(99, parseInt(h))
+      const aNum = Math.min(99, parseInt(a))
       if (!isNaN(hNum) && !isNaN(aNum) && hNum >= 0 && aNum >= 0) {
         onSave(matchId, hNum, aNum)
         setSaved(true)

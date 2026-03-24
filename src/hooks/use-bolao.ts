@@ -6,8 +6,6 @@ import { getBolaoData } from "@/lib/store"
 import {
   getParticipants,
   getPredictionsForParticipantAsync,
-  savePredictionAsync,
-  saveMatchResultAsync,
   getMatchResults,
 } from "@/lib/supabase-store"
 import { isSupabaseConfigured } from "@/lib/supabase"
@@ -120,7 +118,15 @@ export function useBolao() {
 
   const savePrediction = async (matchId: string, homeScore: number, awayScore: number) => {
     if (!activeParticipantId) return
-    await savePredictionAsync(activeParticipantId, matchId, homeScore, awayScore)
+    const res = await fetch("/api/save-prediction", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ participantId: activeParticipantId, matchId, homeScore, awayScore }),
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || "Erro ao salvar palpite")
+    }
     // Update local state immediately
     setPredictions((prev) => {
       const existing = prev.findIndex((p) => p.matchId === matchId && p.participantId === activeParticipantId)
@@ -142,7 +148,22 @@ export function useBolao() {
   }
 
   const saveResult = async (matchId: string, homeScore: number, awayScore: number, homePen?: number, awayPen?: number) => {
-    await saveMatchResultAsync(matchId, homeScore, awayScore, homePen, awayPen)
+    const res = await fetch("/api/save-result", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        participantId: activeParticipantId,
+        matchId,
+        homeScore,
+        awayScore,
+        homePenalties: homePen,
+        awayPenalties: awayPen,
+      }),
+    })
+    if (!res.ok) {
+      const data = await res.json()
+      throw new Error(data.error || "Erro ao salvar resultado")
+    }
     // Update local match state
     setMatches((prev) =>
       prev.map((m) =>

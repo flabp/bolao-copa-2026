@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
 import { AuthSession } from "@/lib/types"
-import { authenticateParticipant } from "@/lib/supabase-store"
 
 const AUTH_STORAGE_KEY = "bolao-auth-session"
 
@@ -34,14 +33,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (name: string, code: string) => {
     try {
-      const participant = await authenticateParticipant(name, code)
-      if (!participant) {
-        return { success: false, error: "Nome ou codigo invalido" }
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, code }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        return { success: false, error: data.error || "Nome ou codigo invalido" }
       }
       const newSession: AuthSession = {
-        participantId: participant.id,
-        participantName: participant.name,
-        isAdmin: participant.isAdmin,
+        participantId: data.id,
+        participantName: data.name,
+        isAdmin: data.isAdmin,
         loginAt: new Date().toISOString(),
       }
       setSession(newSession)

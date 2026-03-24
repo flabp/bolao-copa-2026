@@ -13,4 +13,3 @@ export const DEFAULT_SCORING: ScoringSystem = {
 }
 
 export const DEFAULT_POOL_NAME = "Bolao da Copa 2026"
-export const DEFAULT_ADMIN_PASSWORD = "admin123"

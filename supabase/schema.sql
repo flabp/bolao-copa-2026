@@ -46,24 +46,39 @@ ALTER TABLE predictions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE match_results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 
--- Public access policies (no auth required for simplicity)
-CREATE POLICY "Anyone can read participants" ON participants FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert participants" ON participants FOR INSERT WITH CHECK (true);
-CREATE POLICY "Anyone can update participants" ON participants FOR UPDATE USING (true);
-CREATE POLICY "Anyone can delete participants" ON participants FOR DELETE USING (true);
+-- Secure RLS policies: Read public, Write only via service_role (server API routes)
 
-CREATE POLICY "Anyone can read predictions" ON predictions FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert predictions" ON predictions FOR INSERT WITH CHECK (true);
-CREATE POLICY "Anyone can update predictions" ON predictions FOR UPDATE USING (true);
-CREATE POLICY "Anyone can delete predictions" ON predictions FOR DELETE USING (true);
+-- Participants: public read, service_role write
+CREATE POLICY "select_participants" ON participants FOR SELECT USING (true);
+CREATE POLICY "service_insert_participants" ON participants FOR INSERT
+  WITH CHECK (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_update_participants" ON participants FOR UPDATE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_delete_participants" ON participants FOR DELETE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
 
-CREATE POLICY "Anyone can read results" ON match_results FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert results" ON match_results FOR INSERT WITH CHECK (true);
-CREATE POLICY "Anyone can update results" ON match_results FOR UPDATE USING (true);
+-- Predictions: public read, service_role write
+CREATE POLICY "select_predictions" ON predictions FOR SELECT USING (true);
+CREATE POLICY "service_insert_predictions" ON predictions FOR INSERT
+  WITH CHECK (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_update_predictions" ON predictions FOR UPDATE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_delete_predictions" ON predictions FOR DELETE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
 
-CREATE POLICY "Anyone can read settings" ON settings FOR SELECT USING (true);
-CREATE POLICY "Anyone can insert settings" ON settings FOR INSERT WITH CHECK (true);
-CREATE POLICY "Anyone can update settings" ON settings FOR UPDATE USING (true);
+-- Match Results: public read, service_role write
+CREATE POLICY "select_match_results" ON match_results FOR SELECT USING (true);
+CREATE POLICY "service_insert_match_results" ON match_results FOR INSERT
+  WITH CHECK (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_update_match_results" ON match_results FOR UPDATE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+
+-- Settings: public read, service_role write
+CREATE POLICY "select_settings" ON settings FOR SELECT USING (true);
+CREATE POLICY "service_insert_settings" ON settings FOR INSERT
+  WITH CHECK (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
+CREATE POLICY "service_update_settings" ON settings FOR UPDATE
+  USING (current_setting('request.jwt.claims', true)::json->>'role' = 'service_role');
 
 -- Insert default settings
 INSERT INTO settings (key, value) VALUES
