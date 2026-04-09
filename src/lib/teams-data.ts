@@ -5,13 +5,13 @@ export const TEAMS: Team[] = [
   { id: "MEX", name: "Mexico", shortName: "MEX", flag: "\ud83c\uddf2\ud83c\uddfd", group: "A", isPlaceholder: false },
   { id: "ZAF", name: "Africa do Sul", shortName: "RSA", flag: "\ud83c\uddff\ud83c\udde6", group: "A", isPlaceholder: false },
   { id: "KOR", name: "Coreia do Sul", shortName: "KOR", flag: "\ud83c\uddf0\ud83c\uddf7", group: "A", isPlaceholder: false },
-  { id: "PLD", name: "Playoff UEFA D", shortName: "PLD", flag: "\ud83c\uddea\ud83c\uddfa", group: "A", isPlaceholder: true, placeholderLabel: "Vencedor Playoff UEFA D" },
+  { id: "PLD", name: "Tchequia", shortName: "TCH", flag: "\ud83c\udde8\ud83c\uddff", group: "A", isPlaceholder: false },
 
   // Grupo B
   { id: "CAN", name: "Canada", shortName: "CAN", flag: "\ud83c\udde8\ud83c\udde6", group: "B", isPlaceholder: false },
   { id: "SUI", name: "Suica", shortName: "SUI", flag: "\ud83c\udde8\ud83c\udded", group: "B", isPlaceholder: false },
   { id: "QAT", name: "Catar", shortName: "QAT", flag: "\ud83c\uddf6\ud83c\udde6", group: "B", isPlaceholder: false },
-  { id: "PLA", name: "Playoff UEFA A", shortName: "PLA", flag: "\ud83c\uddea\ud83c\uddfa", group: "B", isPlaceholder: true, placeholderLabel: "Vencedor Playoff UEFA A" },
+  { id: "PLA", name: "Bosnia", shortName: "BOS", flag: "\ud83c\udde7\ud83c\udde6", group: "B", isPlaceholder: false },
 
   // Grupo C
   { id: "BRA", name: "Brasil", shortName: "BRA", flag: "\ud83c\udde7\ud83c\uddf7", group: "C", isPlaceholder: false },
@@ -23,7 +23,7 @@ export const TEAMS: Team[] = [
   { id: "USA", name: "Estados Unidos", shortName: "USA", flag: "\ud83c\uddfa\ud83c\uddf8", group: "D", isPlaceholder: false },
   { id: "PAR", name: "Paraguai", shortName: "PAR", flag: "\ud83c\uddf5\ud83c\uddfe", group: "D", isPlaceholder: false },
   { id: "AUS", name: "Australia", shortName: "AUS", flag: "\ud83c\udde6\ud83c\uddfa", group: "D", isPlaceholder: false },
-  { id: "PLC", name: "Playoff UEFA C", shortName: "PLC", flag: "\ud83c\uddea\ud83c\uddfa", group: "D", isPlaceholder: true, placeholderLabel: "Vencedor Playoff UEFA C" },
+  { id: "PLC", name: "Turquia", shortName: "TUR", flag: "\ud83c\uddf9\ud83c\uddf7", group: "D", isPlaceholder: false },
 
   // Grupo E
   { id: "GER", name: "Alemanha", shortName: "ALE", flag: "\ud83c\udde9\ud83c\uddea", group: "E", isPlaceholder: false },
@@ -35,7 +35,7 @@ export const TEAMS: Team[] = [
   { id: "NED", name: "Holanda", shortName: "HOL", flag: "\ud83c\uddf3\ud83c\uddf1", group: "F", isPlaceholder: false },
   { id: "JPN", name: "Japao", shortName: "JAP", flag: "\ud83c\uddef\ud83c\uddf5", group: "F", isPlaceholder: false },
   { id: "TUN", name: "Tunisia", shortName: "TUN", flag: "\ud83c\uddf9\ud83c\uddf3", group: "F", isPlaceholder: false },
-  { id: "PLB", name: "Playoff UEFA B", shortName: "PLB", flag: "\ud83c\uddea\ud83c\uddfa", group: "F", isPlaceholder: true, placeholderLabel: "Vencedor Playoff UEFA B" },
+  { id: "PLB", name: "Suecia", shortName: "SUE", flag: "\ud83c\uddf8\ud83c\uddea", group: "F", isPlaceholder: false },
 
   // Grupo G
   { id: "BEL", name: "Belgica", shortName: "BEL", flag: "\ud83c\udde7\ud83c\uddea", group: "G", isPlaceholder: false },
@@ -53,7 +53,7 @@ export const TEAMS: Team[] = [
   { id: "FRA", name: "Franca", shortName: "FRA", flag: "\ud83c\uddeb\ud83c\uddf7", group: "I", isPlaceholder: false },
   { id: "SEN", name: "Senegal", shortName: "SEN", flag: "\ud83c\uddf8\ud83c\uddf3", group: "I", isPlaceholder: false },
   { id: "NOR", name: "Noruega", shortName: "NOR", flag: "\ud83c\uddf3\ud83c\uddf4", group: "I", isPlaceholder: false },
-  { id: "IC2", name: "Playoff Interconf. 2", shortName: "IC2", flag: "\ud83c\uddf0\ud83c\uddec", group: "I", isPlaceholder: true, placeholderLabel: "Vencedor Playoff Intercontinental 2" },
+  { id: "IC2", name: "Iraque", shortName: "IRQ", flag: "\ud83c\uddee\ud83c\uddf6", group: "I", isPlaceholder: false },
 
   // Grupo J
   { id: "ARG", name: "Argentina", shortName: "ARG", flag: "\ud83c\udde6\ud83c\uddf7", group: "J", isPlaceholder: false },
@@ -65,7 +65,7 @@ export const TEAMS: Team[] = [
   { id: "POR", name: "Portugal", shortName: "POR", flag: "\ud83c\uddf5\ud83c\uddf9", group: "K", isPlaceholder: false },
   { id: "UZB", name: "Uzbequistao", shortName: "UZB", flag: "\ud83c\uddfa\ud83c\uddff", group: "K", isPlaceholder: false },
   { id: "COL", name: "Colombia", shortName: "COL", flag: "\ud83c\udde8\ud83c\uddf4", group: "K", isPlaceholder: false },
-  { id: "IC1", name: "Playoff Interconf. 1", shortName: "IC1", flag: "\ud83c\uddf0\ud83c\uddec", group: "K", isPlaceholder: true, placeholderLabel: "Vencedor Playoff Intercontinental 1" },
+  { id: "IC1", name: "RD Congo", shortName: "COD", flag: "\ud83c\udde8\ud83c\udde9", group: "K", isPlaceholder: false },
 
   // Grupo L
   { id: "ENG", name: "Inglaterra", shortName: "ING", flag: "\ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f", group: "L", isPlaceholder: false },

@@ -16,9 +16,13 @@ const TEAM_TO_ISO: Record<string, string> = {
   ARG: "ar", ALG: "dz", AUT: "at", JOR: "jo",
   POR: "pt", UZB: "uz", COL: "co",
   ENG: "gb-eng", CRO: "hr", GHA: "gh", PAN: "pa",
-  // Placeholders
-  PLA: "eu", PLB: "eu", PLC: "eu", PLD: "eu",
-  IC1: "un", IC2: "un",
+  // Vencedores dos playoffs (UEFA + Intercontinentais)
+  PLA: "ba", // Bosnia
+  PLB: "se", // Suecia
+  PLC: "tr", // Turquia
+  PLD: "cz", // Tchequia
+  IC1: "cd", // RD Congo
+  IC2: "iq", // Iraque
 }
 
 interface TeamFlagProps {
